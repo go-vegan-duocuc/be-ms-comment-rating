@@ -1,0 +1,14 @@
+{
+   "configurations": [
+      {
+         "type": "java",
+         "name": "Spring Boot-MsCommentRatingApplication<ms-comment-rating>",
+         "request": "launch",
+         "cwd": "${workspaceFolder}",
+         "mainClass": "cl.govegan.ms_comment_rating.MsCommentRatingApplication",
+         "projectName": "ms-comment-rating",
+         "args": "",
+         "envFile": "${workspaceFolder}/.env"
+      }
+   ]
+}
