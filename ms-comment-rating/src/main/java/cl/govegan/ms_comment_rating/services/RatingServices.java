@@ -16,6 +16,7 @@ public interface RatingServices {
       Rating addRating(Rating rating);
       Rating updateRating(Rating rating);
       void deleteRating(String id);
+      double getAverageRatingByRecipeId(String recipeId);
 }
 
 /* Servicio comentarios 

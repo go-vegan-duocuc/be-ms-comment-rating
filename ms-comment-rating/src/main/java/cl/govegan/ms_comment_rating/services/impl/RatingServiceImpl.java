@@ -50,4 +50,13 @@ public class RatingServiceImpl implements RatingServices{
       ratingRepository.deleteById(id);
    }
    
+   @Override
+    public double getAverageRatingByRecipeId(String recipeId) {
+        List<Rating> ratings = ratingRepository.findByRecipeId(recipeId);
+        return ratings.stream()
+                      .mapToInt(Rating::getRating)
+                      .average()
+                      .orElse(0.0);
+    }
+    
 }

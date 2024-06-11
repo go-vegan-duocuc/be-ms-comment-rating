@@ -1,9 +1,7 @@
 package cl.govegan.ms_comment_rating.controller;
 
-import java.util.HashSet;
+import java.util.Collections;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -38,38 +36,49 @@ public class CommentController {
         return ResponseEntity.ok("Comment added correctly");
 
     }
-    @GetMapping("/find")
-     public ResponseEntity<List<Comment>> findComments(
-            @RequestParam(required = false) String recipeId,
-            @RequestParam(required = false) String username) {
-        
-        Set<Comment> comments = new HashSet<>();
-
-        if (recipeId != null && !recipeId.isEmpty()) {
-            comments.addAll(commentService.findByRecipeId(recipeId));
-        }
-        if (username != null && !username.isEmpty()) {
-            comments.addAll(commentService.findByUsername(username));
-        }
-        if (recipeId != null && !recipeId.isEmpty() && username != null && !username.isEmpty()) {
-            comments.addAll(commentService.findByUsernameAndRecipeId(username, recipeId));
-        }
-
-        if (comments.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
-
-        List<Comment> uniqueComments = comments.stream().collect(Collectors.toList());
-
-        return ResponseEntity.ok(uniqueComments);
+    @GetMapping("/findByRecipeId")
+public ResponseEntity<List<Comment>> findCommentsByRecipeId(@RequestParam String recipeId) {
+    List<Comment> comments = commentService.findByRecipeId(recipeId);
+    if (comments.isEmpty()) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                             .body(Collections.emptyList());
     }
-   @DeleteMapping("/delete")
-    public ResponseEntity<String> deleteComments(
-            @RequestParam(required = false) String recipeId,
-            @RequestParam(required = false) String username) {
-        commentService.deleteCommentbyUsernameAndRecipeId(username, recipeId);
-        return ResponseEntity.ok("Comment/s deleted correctly");
+    return ResponseEntity.ok(comments);
+}
+    @GetMapping("/findByUsername")
+public ResponseEntity<List<Comment>> findCommentsByUsername(@RequestParam String username) {
+    List<Comment> comments = commentService.findByUsername(username);
+    if (comments.isEmpty()) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                             .body(Collections.emptyList());
     }
+    return ResponseEntity.ok(comments);
+}
+    @GetMapping("/findByUsernameAndRecipeId")
+public ResponseEntity<List<Comment>> findCommentsByUsernameAndRecipeId(@RequestParam String username, @RequestParam String recipeId) {
+    List<Comment> comments = commentService.findByUsernameAndRecipeId(username, recipeId);
+    if (comments.isEmpty()) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                             .body(Collections.emptyList());
+    }
+    return ResponseEntity.ok(comments);
+}
+
+@DeleteMapping("/delete")
+public ResponseEntity<String> deleteComment(
+        @RequestParam String recipeId,
+        @RequestParam String username) {
+
+    List<Comment> comments = commentService.findByUsernameAndRecipeId(username, recipeId);
+    
+    if (comments.isEmpty()) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                             .body("No comments found to delete for the given parameters.");
+    }
+
+    commentService.deleteCommentbyUsernameAndRecipeId(recipeId, username);
+    return ResponseEntity.ok("Comments deleted successfully.");
+}
 }
     
 
