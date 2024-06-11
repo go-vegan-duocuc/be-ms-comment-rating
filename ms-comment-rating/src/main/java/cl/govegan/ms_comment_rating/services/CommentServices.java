@@ -13,5 +13,5 @@ public interface CommentServices {
     List<Comment> findByRecipeId(String recipeId);
     List<Comment> findByUsername(String username);
     List<Comment> findByUsernameAndRecipeId(String username, String recipeId);
-    
+    void deleteCommentbyUsernameAndRecipeId(String username, String recipeId);
 }

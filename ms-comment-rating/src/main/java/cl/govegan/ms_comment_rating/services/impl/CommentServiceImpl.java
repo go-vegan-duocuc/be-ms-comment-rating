@@ -36,5 +36,9 @@ public class CommentServiceImpl implements CommentServices {
         return commentRepository.findByUsernameAndRecipeId(username, recipeId);
     }
     
+    @Override
+    public void deleteCommentbyUsernameAndRecipeId(String username, String recipeId) {
+        commentRepository.deleteCommentByUsernameAndRecipeId(username, recipeId);
+    }
     
 }
