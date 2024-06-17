@@ -17,3 +17,4 @@ public interface CommentRepository extends MongoRepository<Comment, String> {
    List<Comment> findByUsernameAndRecipeId(String username, String recipeId);
    void deleteCommentByUsernameAndRecipeId(String username, String recipeId);
 }
+ 
