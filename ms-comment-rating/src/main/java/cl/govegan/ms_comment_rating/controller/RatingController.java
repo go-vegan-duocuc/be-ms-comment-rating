@@ -1,8 +1,11 @@
 package cl.govegan.ms_comment_rating.controller;
 
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -69,15 +72,34 @@ public class RatingController {
         return ResponseEntity.ok("Rating deleted successfully");
     }
 
-    @GetMapping("/findByRecipeIdAndUsername")
-    public ResponseEntity<List<Rating>> findRatingsByRecipeIdAndUsername(@RequestParam String recipeId, @RequestParam String username) {
-        List<Rating> ratings = ratingServices.findByUsernameAndRecipeId(username, recipeId);
-        if (ratings.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ratings);
-        }
+    @GetMapping("/findByRecipeId")
+    public ResponseEntity<Page<Rating>> findRatingsByRecipeId(
+            @RequestParam String recipeId,
+            @RequestParam int page,
+            @RequestParam int size,
+            @RequestParam(required = false, defaultValue = "createdAt") String sortBy,
+            @RequestParam(required = false, defaultValue = "desc") String sortDirection) {
+        
+        Sort sort = Sort.by(Sort.Direction.fromString(sortDirection), sortBy);
+        Pageable pageable = PageRequest.of(page, size, sort);
+        Page<Rating> ratings = ratingServices.findByRecipeId(recipeId, pageable);
         return ResponseEntity.ok(ratings);
     }
 
+    @GetMapping("/findByRecipeIdAndUsername")
+    public ResponseEntity<Page<Rating>> findByRecipeIdAndUsername(
+            @RequestParam String recipeId, 
+            @RequestParam String username, 
+            @RequestParam int page, 
+            @RequestParam int size,
+            @RequestParam(required = false, defaultValue = "createdAt") String sortBy,
+            @RequestParam(required = false, defaultValue = "desc") String sortDirection) {
+        
+        Sort sort = Sort.by(Sort.Direction.fromString(sortDirection), sortBy);
+        Pageable pageable = PageRequest.of(page, size, sort);
+        Page<Rating> ratings = ratingServices.findByUsernameAndRecipeId(recipeId, username, pageable);
+        return ResponseEntity.ok(ratings);
+}
     @GetMapping("/average")
     public ResponseEntity<Double> getAverageRating(@RequestParam String recipeId) {
         double averageRating = ratingServices.getAverageRatingByRecipeId(recipeId);
