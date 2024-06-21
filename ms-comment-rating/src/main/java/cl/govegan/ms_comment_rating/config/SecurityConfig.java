@@ -29,13 +29,13 @@ public class SecurityConfig implements WebMvcConfigurer{
                 .requestMatchers(HttpMethod.GET, "/api/v1/ratings/status").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/v1/comments").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/v1/ratings/add").permitAll()
-                .requestMatchers(HttpMethod.GET, "/api/v1/comments/**").authenticated()
-                .requestMatchers(HttpMethod.DELETE, "/api/v1/comments/**").authenticated()
-                .requestMatchers(HttpMethod.PUT, "/api/v1/comments/**").authenticated()
-                .requestMatchers(HttpMethod.GET, "/api/v1/ratings/**").authenticated()
-                .requestMatchers(HttpMethod.DELETE, "/api/v1/ratings/**").authenticated()
-                .requestMatchers(HttpMethod.PUT, "/api/v1/ratings/**").authenticated()
-                .anyRequest().authenticated()
+                .requestMatchers(HttpMethod.GET, "/api/v1/comments/**").permitAll()
+                .requestMatchers(HttpMethod.DELETE, "/api/v1/comments/**").permitAll()
+                .requestMatchers(HttpMethod.PUT, "/api/v1/comments/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/v1/ratings/**").permitAll()
+                .requestMatchers(HttpMethod.DELETE, "/api/v1/ratings/**").permitAll()
+                .requestMatchers(HttpMethod.PUT, "/api/v1/ratings/**").permitAll()
+                .anyRequest().permitAll()
             );
         return http.build();
 

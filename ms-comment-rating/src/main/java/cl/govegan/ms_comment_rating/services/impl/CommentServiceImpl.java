@@ -1,15 +1,14 @@
 package cl.govegan.ms_comment_rating.services.impl;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import cl.govegan.ms_comment_rating.models.Comment;
 import cl.govegan.ms_comment_rating.repositories.CommentRepository;
 import cl.govegan.ms_comment_rating.services.CommentServices;
 import lombok.RequiredArgsConstructor;
-
 @Service
 @RequiredArgsConstructor
 public class CommentServiceImpl implements CommentServices {
@@ -20,25 +19,36 @@ public class CommentServiceImpl implements CommentServices {
     public Comment addComment(Comment comment) {
         return commentRepository.save(comment);
     }
-
     @Override
-    public List<Comment> findByRecipeId(String recipeId) {
-        return commentRepository.findByRecipeId(recipeId);
+    public Comment findById(String id) {
+        return commentRepository.findById(id).orElse(null);
     }
 
     @Override
-    public List<Comment> findByUsername(String username) {
-        return commentRepository.findByUsername(username);
+    public Page<Comment> findByRecipeId(String recipeId, Pageable pageable) {
+        return commentRepository.findByRecipeId(recipeId, pageable);
     }
 
     @Override
-    public List<Comment> findByUsernameAndRecipeId(String username, String recipeId) {
-        return commentRepository.findByUsernameAndRecipeId(username, recipeId);
+    public Page<Comment> findByUsername(String username, Pageable pageable) {
+        return commentRepository.findByUsername(username, pageable);
+    }
+
+    @Override
+    public Page<Comment> findByUsernameAndRecipeId(String username, String recipeId, Pageable pageable) {
+        return commentRepository.findByUsernameAndRecipeId(username, recipeId, pageable);
     }
     
     @Override
-    public void deleteCommentbyUsernameAndRecipeId(String username, String recipeId) {
-        commentRepository.deleteCommentByUsernameAndRecipeId(username, recipeId);
+    public Boolean deleteCommentbyUsernameAndRecipeId(String recipeId, String username) {
+        commentRepository.deleteByUsernameAndRecipeId(username, recipeId);
+        return null;
     }
     
+    @Override
+    public Comment updateComment(Comment comment) {
+        return commentRepository.save(comment);
+    }
+
+
 }

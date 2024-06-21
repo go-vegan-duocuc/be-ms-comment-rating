@@ -1,7 +1,8 @@
 package cl.govegan.ms_comment_rating.services.impl;
 
-import java.util.List;
-
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import cl.govegan.ms_comment_rating.models.Rating;
@@ -13,7 +14,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class RatingServiceImpl implements RatingServices{
 
-   private final RatingRepository ratingRepository;
+   @Autowired
+   private RatingRepository ratingRepository;
 
    @Override
    public Rating findById(String id) {
@@ -21,19 +23,19 @@ public class RatingServiceImpl implements RatingServices{
    }
 
    @Override
-   public List<Rating> findByRecipeId(String recipeId) {
-      return ratingRepository.findByRecipeId(recipeId);
-   }
+    public Page<Rating> findByRecipeId(String recipeId, Pageable pageable) {
+        return ratingRepository.findByRecipeId(recipeId, pageable);
+    }
 
-   @Override
-   public List<Rating> findByUsername(String username) {
-      return ratingRepository.findByUsername(username);
-   }
+    @Override
+    public Page<Rating> findByUsername(String username, Pageable pageable) {
+        return ratingRepository.findByUsername(username, pageable);
+    }
 
-   @Override
-   public List<Rating> findByUsernameAndRecipeId(String username, String recipeId) {
-      return ratingRepository.findByUsernameAndRecipeId(username, recipeId);
-   }
+    @Override
+    public Page<Rating> findByUsernameAndRecipeId(String username, String recipeId, Pageable pageable) {
+        return ratingRepository.findByUsernameAndRecipeId(username, recipeId, pageable);
+    }
 
    @Override
    public Rating addRating(Rating rating) {
@@ -52,11 +54,12 @@ public class RatingServiceImpl implements RatingServices{
    
    @Override
     public double getAverageRatingByRecipeId(String recipeId) {
-        List<Rating> ratings = ratingRepository.findByRecipeId(recipeId);
-        return ratings.stream()
-                      .mapToInt(Rating::getRating)
-                      .average()
-                      .orElse(0.0);
+        Page<Rating> ratings = ratingRepository.findByRecipeId(recipeId, Pageable.ofSize(10));
+        double sum = 0;
+        for (Rating rating : ratings.getContent()) {
+            sum += rating.getRating();
+        }
+        return sum / ratings.getTotalElements();
     }
     
 }
