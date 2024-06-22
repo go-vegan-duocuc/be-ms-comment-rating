@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import cl.govegan.ms_comment_rating.models.Rating;
 
 @Service
+
 public interface RatingServices {
 
       public Rating findById(String id);

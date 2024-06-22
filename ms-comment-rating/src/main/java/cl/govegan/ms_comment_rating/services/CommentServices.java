@@ -13,5 +13,5 @@ public interface CommentServices {
     Page<Comment> findByUsernameAndRecipeId(String username, String recipeId, Pageable pageable);
     Comment addComment(Comment comment);
     Comment updateComment(Comment comment);
-    Boolean deleteCommentbyUsernameAndRecipeId(String recipeId, String username);
+    void deleteCommentbyUsernameAndRecipeId(String recipeId, String username);
 }
