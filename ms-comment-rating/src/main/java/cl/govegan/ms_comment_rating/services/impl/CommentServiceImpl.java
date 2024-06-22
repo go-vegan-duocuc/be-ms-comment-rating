@@ -4,7 +4,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import cl.govegan.ms_comment_rating.exceptions.ResourceNotFoundException;
+import cl.govegan.ms_comment_rating.exception.ResourceNotFoundException;
 import cl.govegan.ms_comment_rating.models.Comment;
 import cl.govegan.ms_comment_rating.repositories.CommentRepository;
 import cl.govegan.ms_comment_rating.services.CommentServices;
@@ -40,11 +40,12 @@ public class CommentServiceImpl implements CommentServices {
     }
     
     @Override
-    public void deleteCommentbyUsernameAndRecipeId(String recipeId, String username) {
+    public boolean deleteCommentbyUsernameAndRecipeId(String recipeId, String username) {
         long deletedCount = commentRepository.deleteByUsernameAndRecipeId(recipeId, username);
         if (deletedCount == 0) {
             throw new ResourceNotFoundException("No comments found to delete for the given parameters.");
         }
+        return false;
     }
     @Override
     public Comment updateComment(Comment comment) {

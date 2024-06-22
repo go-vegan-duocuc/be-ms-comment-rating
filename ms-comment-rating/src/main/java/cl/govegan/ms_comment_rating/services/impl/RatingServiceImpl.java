@@ -4,7 +4,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import cl.govegan.ms_comment_rating.exceptions.ResourceNotFoundException;
+import cl.govegan.ms_comment_rating.exception.ResourceNotFoundException;
 import cl.govegan.ms_comment_rating.models.Rating;
 import cl.govegan.ms_comment_rating.repositories.RatingRepository;
 import cl.govegan.ms_comment_rating.services.RatingServices;
