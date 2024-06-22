@@ -4,7 +4,6 @@ package cl.govegan.ms_comment_rating.controller;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,32 +28,24 @@ public class RatingController {
    private final RatingServices ratingServices;
 
    @GetMapping("/status")
-   public ResponseEntity<String> status() {
-      return ResponseEntity.ok("Rating service is up and running");
-   }
+    public ResponseEntity<String> status() {
+        return ResponseEntity.ok("Rating service is up and running");
+    }
 
-   @PostMapping("/add")
+    @PostMapping("/add")
     public ResponseEntity<String> addRating(@RequestBody Rating rating) {
         ratingServices.addRating(rating);
         return ResponseEntity.ok("Rating added successfully");
     }
 
-   @PatchMapping("/update")
+    @PatchMapping("/update")
     public ResponseEntity<String> updateRating(@RequestBody Rating rating) {
-        Rating existingRating = ratingServices.findById(rating.getId());
-        if (existingRating == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Rating not found");
-        }
         ratingServices.updateRating(rating);
         return ResponseEntity.ok("Rating updated successfully");
     }
 
     @DeleteMapping("/delete")
     public ResponseEntity<String> deleteRating(@RequestParam String id) {
-        Rating existingRating = ratingServices.findById(id);
-        if (existingRating == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Rating not found");
-        }
         ratingServices.deleteRating(id);
         return ResponseEntity.ok("Rating deleted successfully");
     }
@@ -79,6 +70,7 @@ public class RatingController {
         );
         return ResponseEntity.ok(ratings);
     }
+
     @GetMapping("/average")
     public ResponseEntity<String> getAverageRating(@RequestParam String recipeId) {
         double averageRating = ratingServices.getAverageRatingByRecipeId(recipeId);

@@ -14,7 +14,7 @@ public interface CommentRepository extends MongoRepository<Comment, String> {
 
     Page<Comment> findByUsernameAndRecipeId(String username, String recipeId, Pageable pageable);
 
-    void deleteByUsernameAndRecipeId(String username, String recipeId);
+    long deleteByUsernameAndRecipeId(String username, String recipeId);
 
 }
  

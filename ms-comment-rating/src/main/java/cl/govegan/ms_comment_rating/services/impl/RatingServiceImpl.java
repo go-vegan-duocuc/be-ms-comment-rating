@@ -4,6 +4,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import cl.govegan.ms_comment_rating.exceptions.ResourceNotFoundException;
 import cl.govegan.ms_comment_rating.models.Rating;
 import cl.govegan.ms_comment_rating.repositories.RatingRepository;
 import cl.govegan.ms_comment_rating.services.RatingServices;
@@ -16,9 +17,10 @@ public class RatingServiceImpl implements RatingServices{
    private final RatingRepository ratingRepository;
 
    @Override
-   public Rating findById(String id) {
-      return ratingRepository.findById(id).orElse(null);
-   }
+    public Rating findById(String id) {
+        return ratingRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Rating not found with id: " + id));
+    }
 
    @Override
     public Page<Rating> findByRecipeId(String recipeId, Pageable pageable) {
@@ -42,17 +44,27 @@ public class RatingServiceImpl implements RatingServices{
 
     @Override
     public Rating updateRating(Rating rating) {
+        if (!ratingRepository.existsById(rating.getId())) {
+            throw new ResourceNotFoundException("Rating not found");
+        }
         return ratingRepository.save(rating);
     }
 
     @Override
     public void deleteRating(String id) {
+        if (!ratingRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Rating not found");
+        }
         ratingRepository.deleteById(id);
     }
    
     @Override
     public double getAverageRatingByRecipeId(String recipeId) {
-        return ratingRepository.findAverageRatingByRecipeId(recipeId);
+        Double averageRating = ratingRepository.findAverageRatingByRecipeId(recipeId);
+        if (averageRating == null) {
+            throw new ResourceNotFoundException("No ratings found for recipeId: " + recipeId);
+        }
+        return averageRating;
     }
     
 }
