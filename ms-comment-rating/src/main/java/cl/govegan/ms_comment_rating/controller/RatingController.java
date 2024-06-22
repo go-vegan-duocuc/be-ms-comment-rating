@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import cl.govegan.ms_comment_rating.dto.RatingRequest;
 import cl.govegan.ms_comment_rating.models.Rating;
 import cl.govegan.ms_comment_rating.services.RatingServices;
 
@@ -34,23 +35,18 @@ public class RatingController {
    }
 
    @PostMapping("/add")
-   public ResponseEntity<String> addRating(
-         @RequestParam String recipeId,
-         @RequestParam String username,
-         @RequestParam int rating,
-         @RequestParam String createdAt) {
+public ResponseEntity<String> addRating(@RequestBody RatingRequest ratingRequest) {
+    Rating ratingObj = Rating.builder()
+          .recipeId(ratingRequest.getRecipeId())
+          .username(ratingRequest.getUsername())
+          .rating(ratingRequest.getRating())
+          .createdAt(ratingRequest.getCreatedAt())
+          .build();
 
-      Rating ratingObj = Rating.builder()
-            .recipeId(recipeId)
-            .username(username)
-            .rating(rating)
-            .createdAt(createdAt)
-            .build();
+    ratingServices.addRating(ratingObj);
 
-      ratingServices.addRating(ratingObj);
-
-      return ResponseEntity.ok("Rating added successfully");
-   }
+    return ResponseEntity.ok("Rating added successfully");
+}
 
    @PutMapping("/update")
     public ResponseEntity<String> updateRating(@RequestBody Rating rating) {
