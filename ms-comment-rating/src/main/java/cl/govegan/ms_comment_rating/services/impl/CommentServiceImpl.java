@@ -1,10 +1,10 @@
 package cl.govegan.ms_comment_rating.services.impl;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import cl.govegan.ms_comment_rating.exceptions.ResourceNotFoundException;
 import cl.govegan.ms_comment_rating.models.Comment;
 import cl.govegan.ms_comment_rating.repositories.CommentRepository;
 import cl.govegan.ms_comment_rating.services.CommentServices;
@@ -12,8 +12,8 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class CommentServiceImpl implements CommentServices {
-    @Autowired
-    private CommentRepository commentRepository;
+    
+    private final CommentRepository commentRepository;
 
     @Override
     public Comment addComment(Comment comment) {
@@ -40,15 +40,15 @@ public class CommentServiceImpl implements CommentServices {
     }
     
     @Override
-    public Boolean deleteCommentbyUsernameAndRecipeId(String recipeId, String username) {
-        commentRepository.deleteByUsernameAndRecipeId(username, recipeId);
-        return null;
+    public void deleteCommentbyUsernameAndRecipeId(String recipeId, String username) {
+        long deletedCount = commentRepository.deleteByUsernameAndRecipeId(recipeId, username);
+        if (deletedCount == 0) {
+            throw new ResourceNotFoundException("No comments found to delete for the given parameters.");
+        }
     }
-    
     @Override
     public Comment updateComment(Comment comment) {
         return commentRepository.save(comment);
     }
-
 
 }
