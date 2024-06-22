@@ -1,6 +1,5 @@
 package cl.govegan.ms_comment_rating.services.impl;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -14,8 +13,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class RatingServiceImpl implements RatingServices{
 
-   @Autowired
-   private RatingRepository ratingRepository;
+   private final RatingRepository ratingRepository;
 
    @Override
    public Rating findById(String id) {
@@ -37,29 +35,24 @@ public class RatingServiceImpl implements RatingServices{
         return ratingRepository.findByUsernameAndRecipeId(username, recipeId, pageable);
     }
 
-   @Override
-   public Rating addRating(Rating rating) {
-      return ratingRepository.save(rating);
-   }
+    @Override
+    public Rating addRating(Rating rating) {
+        return ratingRepository.save(rating);
+    }
 
-   @Override
-   public Rating updateRating(Rating rating) {
-      return ratingRepository.save(rating);
-   }
+    @Override
+    public Rating updateRating(Rating rating) {
+        return ratingRepository.save(rating);
+    }
 
-   @Override
-   public void deleteRating(String id) {
-      ratingRepository.deleteById(id);
-   }
+    @Override
+    public void deleteRating(String id) {
+        ratingRepository.deleteById(id);
+    }
    
-   @Override
+    @Override
     public double getAverageRatingByRecipeId(String recipeId) {
-        Page<Rating> ratings = ratingRepository.findByRecipeId(recipeId, Pageable.ofSize(10));
-        double sum = 0;
-        for (Rating rating : ratings.getContent()) {
-            sum += rating.getRating();
-        }
-        return sum / ratings.getTotalElements();
+        return ratingRepository.findAverageRatingByRecipeId(recipeId);
     }
     
 }

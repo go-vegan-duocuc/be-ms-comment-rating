@@ -1,58 +1,45 @@
 package cl.govegan.ms_comment_rating.controller;
 
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import cl.govegan.ms_comment_rating.dto.RatingRequest;
 import cl.govegan.ms_comment_rating.models.Rating;
 import cl.govegan.ms_comment_rating.services.RatingServices;
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/api/v1/ratings")
+@RequiredArgsConstructor
 public class RatingController {
 
-   @Autowired
-   private RatingServices ratingServices;
+   
+   private final RatingServices ratingServices;
 
    @GetMapping("/status")
    public ResponseEntity<String> status() {
-
       return ResponseEntity.ok("Rating service is up and running");
    }
 
    @PostMapping("/add")
-   public ResponseEntity<String> addRating(
-         @RequestParam String recipeId,
-         @RequestParam String username,
-         @RequestParam int rating,
-         @RequestParam String createdAt) {
+    public ResponseEntity<String> addRating(@RequestBody Rating rating) {
+        ratingServices.addRating(rating);
+        return ResponseEntity.ok("Rating added successfully");
+    }
 
-      Rating ratingObj = Rating.builder()
-            .recipeId(recipeId)
-            .username(username)
-            .rating(rating)
-            .createdAt(createdAt)
-            .build();
-
-      ratingServices.addRating(ratingObj);
-
-      return ResponseEntity.ok("Rating added successfully");
-   }
-
-   @PutMapping("/update")
+   @PatchMapping("/update")
     public ResponseEntity<String> updateRating(@RequestBody Rating rating) {
         Rating existingRating = ratingServices.findById(rating.getId());
         if (existingRating == null) {
@@ -72,37 +59,30 @@ public class RatingController {
         return ResponseEntity.ok("Rating deleted successfully");
     }
 
-    @GetMapping("/findByRecipeId")
-    public ResponseEntity<Page<Rating>> findRatingsByRecipeId(
-            @RequestParam String recipeId,
-            @RequestParam int page,
-            @RequestParam int size,
-            @RequestParam(required = false, defaultValue = "createdAt") String sortBy,
-            @RequestParam(required = false, defaultValue = "desc") String sortDirection) {
-        
-        Sort sort = Sort.by(Sort.Direction.fromString(sortDirection), sortBy);
-        Pageable pageable = PageRequest.of(page, size, sort);
-        Page<Rating> ratings = ratingServices.findByRecipeId(recipeId, pageable);
+    @PostMapping("/findByRecipeId")
+    public ResponseEntity<Page<Rating>> findRatingsByRecipeId(@RequestBody RatingRequest ratingRequest) {
+        Sort sort = Sort.by(Sort.Direction.DESC, "createdAt");
+        Page<Rating> ratings = ratingServices.findByRecipeId(
+                ratingRequest.getRecipeId(),
+                PageRequest.of(ratingRequest.getPage(), ratingRequest.getSize(), sort)
+        );
         return ResponseEntity.ok(ratings);
     }
 
-    @GetMapping("/findByRecipeIdAndUsername")
-    public ResponseEntity<Page<Rating>> findByRecipeIdAndUsername(
-            @RequestParam String recipeId, 
-            @RequestParam String username, 
-            @RequestParam int page, 
-            @RequestParam int size,
-            @RequestParam(required = false, defaultValue = "createdAt") String sortBy,
-            @RequestParam(required = false, defaultValue = "desc") String sortDirection) {
-        
-        Sort sort = Sort.by(Sort.Direction.fromString(sortDirection), sortBy);
-        Pageable pageable = PageRequest.of(page, size, sort);
-        Page<Rating> ratings = ratingServices.findByUsernameAndRecipeId(recipeId, username, pageable);
+    @PostMapping("/findByRecipeIdAndUsername")
+    public ResponseEntity<Page<Rating>> findByRecipeIdAndUsername(@RequestBody RatingRequest ratingRequest) {
+        Sort sort = Sort.by(Sort.Direction.DESC, "createdAt");
+        Page<Rating> ratings = ratingServices.findByUsernameAndRecipeId(
+                ratingRequest.getUsername(),
+                ratingRequest.getRecipeId(),
+                PageRequest.of(ratingRequest.getPage(), ratingRequest.getSize(), sort)
+        );
         return ResponseEntity.ok(ratings);
-}
+    }
     @GetMapping("/average")
-    public ResponseEntity<Double> getAverageRating(@RequestParam String recipeId) {
+    public ResponseEntity<String> getAverageRating(@RequestParam String recipeId) {
         double averageRating = ratingServices.getAverageRatingByRecipeId(recipeId);
-        return ResponseEntity.ok(averageRating);
+        String roundedAverage = String.format("%.2f", Math.round(averageRating * 100.0) / 100.0);
+        return ResponseEntity.ok(roundedAverage);
     }
 }
