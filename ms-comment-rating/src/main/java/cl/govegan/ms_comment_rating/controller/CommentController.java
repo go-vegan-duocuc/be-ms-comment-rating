@@ -1,31 +1,21 @@
 package cl.govegan.ms_comment_rating.controller;
 
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
 import cl.govegan.ms_comment_rating.dto.CommentRequest;
 import cl.govegan.ms_comment_rating.models.Comment;
 import cl.govegan.ms_comment_rating.services.CommentServices;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/comments")
-@RequiredArgsConstructor
 public class CommentController {
     private final CommentServices commentService;
 
@@ -63,7 +53,7 @@ public class CommentController {
     @PostMapping("/findByUsernameAndRecipeId")
     public ResponseEntity<Page<Comment>> findCommentsByUsernameAndRecipeId(@RequestBody CommentRequest commentRequest) {
         Sort sort = Sort.by(Sort.Direction.DESC, "createdAt");
-        Page<Comment> comments = commentServices.findByUsernameAndRecipeId(
+        Page<Comment> comments = commentService.findByUsernameAndRecipeId(
                 commentRequest.getUsername(),
                 commentRequest.getRecipeId(),
                 PageRequest.of(commentRequest.getPage(), commentRequest.getSize(), sort)
@@ -93,7 +83,7 @@ public class CommentController {
         }
 */
     public ResponseEntity<String> deleteCommentByUsernameAndRecipeId(@RequestBody CommentRequest commentRequest) {
-        commentServices.deleteCommentbyUsernameAndRecipeId(commentRequest.getRecipeId(), commentRequest.getUsername());
+        commentService.deleteCommentbyUsernameAndRecipeId(commentRequest.getRecipeId(), commentRequest.getUsername());
         return ResponseEntity.ok("Comments deleted successfully.");
 
     }

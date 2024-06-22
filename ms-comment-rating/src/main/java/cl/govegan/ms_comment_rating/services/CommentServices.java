@@ -4,7 +4,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import cl.govegan.ms_comment_rating.models.Comment;
+import org.springframework.stereotype.Service;
 
+@Service
 public interface CommentServices {
 
     Comment findById(String id);
